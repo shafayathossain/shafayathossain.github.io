@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shafayat Hossain Khan — Mobile Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #050810;
+  --bg2: #090d1a;
+  --surface: #0e1525;
+  --surface2: #141d30;
+  --accent: #4f9cf9;
+  --accent2: #7c3aed;
+  --accent3: #06d6a0;
+  --text: #e8edf8;
+  --text2: #8892aa;
+  --text3: #4a5568;
+  --border: rgba(79,156,249,0.12);
+  --glow: rgba(79,156,249,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(79,156,249,0.5);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.18s ease, width 0.2s, height 0.2s, opacity 0.2s;
+}
+body:has(a:hover) #cursor-ring,
+body:has(button:hover) #cursor-ring { width: 56px; height: 56px; opacity: 0.6; }
+
+/* ── CANVAS BG ── */
+#bg-canvas {
+  position: fixed; inset: 0;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ── NOISE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+/* ── LAYOUT ── */
+main { position: relative; z-index: 2; }
+
+section { padding: 100px 0; }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(5,8,16,0.7);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.nav-logo {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: color 0.2s;
+  cursor: none;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hero-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.2s forwards;
+}
+
+.hero-name {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.35s forwards;
+}
+.hero-name span { color: var(--accent); }
+
+.hero-title {
+  font-size: 1.1rem;
+  color: var(--text2);
+  font-weight: 400;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.5s forwards;
+}
+
+.hero-bio {
+  font-size: 0.95rem;
+  color: var(--text2);
+  line-height: 1.8;
+  max-width: 480px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.65s forwards;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.8s forwards;
+}
+
+.btn-primary {
+  padding: 14px 28px;
+  background: var(--accent);
+  color: #050810;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: none;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,156,249,0.4); }
+
+.btn-ghost {
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: none;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+/* ── HERO RIGHT — PHONE MOCKUP ── */
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  animation: fadeIn 1s 0.9s forwards;
+  position: relative;
+}
+
+.phone-wrap {
+  position: relative;
+  width: 240px;
+}
+
+.phone-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(79,156,249,0.2) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.phone {
+  width: 240px;
+  height: 480px;
+  background: var(--surface);
+  border-radius: 36px;
+  border: 1.5px solid rgba(79,156,249,0.3);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  z-index: 2;
+}
+
+.phone-screen {
+  padding: 40px 16px 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.phone-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface2);
+  animation: shimmer 2s ease-in-out infinite;
+}
+.phone-bar.accent { background: var(--accent); width: 60%; }
+.phone-bar.w80 { width: 80%; }
+.phone-bar.w60 { width: 60%; }
+.phone-bar.w90 { width: 90%; }
+.phone-bar.w40 { width: 40%; }
+.phone-bar.w70 { width: 70%; }
+
+.phone-card {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+.phone-card-dot {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  margin-bottom: 8px;
+}
+
+/* ── STATS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 80px;
+}
+.stat {
+  background: var(--surface);
+  padding: 32px 24px;
+  text-align: center;
+  transition: background 0.2s;
+}
+.stat:hover { background: var(--surface2); }
+.stat-num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  display: block;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── SECTION LABELS ── */
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::after {
+  content: '';
+  height: 1px;
+  width: 40px;
+  background: var(--accent);
+  opacity: 0.4;
+}
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 60px;
+}
+
+/* ── SKILLS ── */
+#skills { background: var(--bg2); }
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.skill-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+.skill-card:hover { transform: translateY(-4px); border-color: rgba(79,156,249,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+.skill-card:hover::before { transform: scaleX(1); }
+
+.skill-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+}
+.skill-cat {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.skill-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.skill-card:hover .tag { border-color: rgba(79,156,249,0.25); color: var(--text); }
+
+/* ── EXPERIENCE ── */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 48px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.5s;
+}
+.timeline-item.visible { opacity: 1; transform: translateX(0); }
+
+.timeline-dot {
+  position: absolute;
+  left: -36px; top: 6px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,156,249,0.2);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  gap: 20px;
+}
+.timeline-company {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.timeline-period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-top: 4px;
+}
+.timeline-role {
+  font-size: 0.85rem;
+  color: var(--text2);
+  margin-bottom: 14px;
+}
+
+.timeline-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.timeline-bullets li {
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.7;
+  padding-left: 16px;
+  position: relative;
+}
+.timeline-bullets li::before {
+  content: '›';
+  position: absolute; left: 0;
+  color: var(--accent);
+}
+
+/* ── PROJECTS ── */
+#projects { background: var(--bg2); }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+.project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(79,156,249,0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.project-card:hover { transform: translateY(-6px); border-color: rgba(79,156,249,0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
+.project-card:hover::after { opacity: 1; }
+
+.project-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text3);
+  margin-bottom: 12px;
+  letter-spacing: 0.1em;
+}
+.project-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.project-stack {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+.project-desc {
+  font-size: 0.82rem;
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+/* ── CONTACT ── */
+#contact {
+  text-align: center;
+}
+.contact-inner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.contact-subtitle {
+  color: var(--text2);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 48px;
+}
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s;
+  cursor: none;
+}
+.contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 40px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.05); }
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-12px) rotate(1deg); }
+  66%       { transform: translateY(-6px) rotate(-1deg); }
+}
+
+.phone-wrap { animation: float 6s ease-in-out infinite; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── COUNTER ── */
+.count-up { display: inline-block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+  .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .skills-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  nav { padding: 16px 20px; }
+  .nav-links { gap: 16px; }
+  .container { padding: 0 20px; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">shafayat.dev</div>
+  <div class="nav-links">
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-tag">// Mobile Software Engineer</div>
+        <h1 class="hero-name">Shafayat<br/><span>Hossain</span><br/>Khan</h1>
+        <div class="hero-title">6+ Years · Flutter · Android · iOS · Technical Lead</div>
+        <p class="hero-bio">Building high-quality, high-traffic mobile applications across Flutter, Native Android, and Native iOS. Proven in healthcare, maritime safety, telecoms, and enterprise software. Currently exploring agentic AI-assisted development.</p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn-primary">View Projects ↓</a>
+          <a href="#contact" class="btn-ghost">Get in Touch</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-wrap">
+          <div class="phone-glow"></div>
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar accent"></div>
+              <div class="phone-bar w80"></div>
+              <div class="phone-bar w60"></div>
+              <div style="height:12px"></div>
+              <div class="phone-card">
+                <div class="phone-card-dot"></div>
+                <div class="phone-bar w90"></div>
+                <div style="height:5px"></div>
+                <div class="phone-bar w70"></div>
+              </div>
+              <div class="phone-card">
+                <div class="phone-card-dot" style="background:linear-gradient(135deg,#06d6a0,#4f9cf9)"></div>
+                <div class="phone-bar w80"></div>
+                <div style="height:5px"></div>
+                <div class="phone-bar w40"></div>
+              </div>
+              <div class="phone-card">
+                <div class="phone-card-dot" style="background:linear-gradient(135deg,#7c3aed,#4f9cf9)"></div>
+                <div class="phone-bar w70"></div>
+                <div style="height:5px"></div>
+                <div class="phone-bar w90"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row reveal">
+      <div class="stat">
+        <span class="stat-num count-up" data-target="6">0</span>
+        <span class="stat-label">Years Experience</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num count-up" data-target="9">0</span>
+        <span class="stat-label">Projects Shipped</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-target="5">5M+</span>
+        <span class="stat-label">Users Reached</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-target="60">60%</span>
+        <span class="stat-label">Dev Time Reduced</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-label">02 / expertise</div>
+    <h2 class="section-title">Skills & Stack</h2>
+    <div class="skills-grid">
+
+      <div class="skill-card reveal">
+        <div class="skill-icon" style="background:rgba(79,156,249,0.1)">📱</div>
+        <div class="skill-cat">Mobile</div>
+        <h3>Cross-Platform</h3>
+        <div class="skill-tags">
+          <span class="tag">Flutter</span><span class="tag">KMP</span><span class="tag">CMP</span><span class="tag">Dart</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon" style="background:rgba(6,214,160,0.1)">🤖</div>
+        <div class="skill-cat">Native Android</div>
+        <h3>Android</h3>
+        <div class="skill-tags">
+          <span class="tag">Kotlin</span><span class="tag">Jetpack Compose</span><span class="tag">MVVM</span><span class="tag">RxJava2</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon" style="background:rgba(124,58,237,0.1)">🍎</div>
+        <div class="skill-cat">Native iOS</div>
+        <h3>iOS</h3>
+        <div class="skill-tags">
+          <span class="tag">Swift</span><span class="tag">SwiftUI</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon" style="background:rgba(79,156,249,0.1)">☁️</div>
+        <div class="skill-cat">Backend & Cloud</div>
+        <h3>Cloud & Data</h3>
+        <div class="skill-tags">
+          <span class="tag">Firebase</span><span class="tag">AWS IoT</span><span class="tag">MQTT</span><span class="tag">SignalR</span><span class="tag">MS SQL</span><span class="tag">REST APIs</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon" style="background:rgba(6,214,160,0.1)">⚙️</div>
+        <div class="skill-cat">DevOps & CI/CD</div>
+        <h3>Automation</h3>
+        <div class="skill-tags">
+          <span class="tag">GitHub Actions</span><span class="tag">Fastlane</span><span class="tag">Azure DevOps</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon" style="background:rgba(124,58,237,0.1)">🤖</div>
+        <div class="skill-cat">AI-Assisted Dev</div>
+        <h3>Agentic AI</h3>
+        <div class="skill-tags">
+          <span class="tag">BMad Framework</span><span class="tag">Vibe Coding</span><span class="tag">AI Workflow</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="section-label">03 / career</div>
+    <h2 class="section-title">Experience</h2>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="timeline-company">Kahf Yazılım Anonim Şirketi</div>
+          <div class="timeline-period">Jul 2025 – Present</div>
+        </div>
+        <div class="timeline-role">Software Engineer</div>
+        <ul class="timeline-bullets">
+          <li>Engineered internal libraries for Kahf Ads and Kahf ID Mobile SDK, serving 5M+ users.</li>
+          <li>Leveraged BMad agentic AI workflows and vibe coding to reduce development time by 60%.</li>
+          <li>Delivered features across Flutter, CMP, KMP, Native iOS, and Native Android.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="timeline-company">Enosis Solutions Ltd.</div>
+          <div class="timeline-period">Sep 2023 – Jun 2025</div>
+        </div>
+        <div class="timeline-role">Software Technical Lead</div>
+        <ul class="timeline-bullets">
+          <li>Guided 5+ engineers through complex solution design, reducing post-release defects by 30%.</li>
+          <li>Coached team to improve on-time delivery rate from ~70% to 95% over 6 months.</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-header">
+          <div class="timeline-company">Brain Station 23 Ltd.</div>
+          <div class="timeline-period">Jul 2018 – Aug 2023</div>
+        </div>
+        <div class="timeline-role">Trainee → Associate → Software → Senior Software Engineer</div>
+        <ul class="timeline-bullets">
+          <li>Delivered 3+ major client products from inception to production across diverse industries.</li>
+          <li>Drove adoption of MVVM/clean architecture patterns, cutting bug turnaround time by 25%.</li>
+          <li>Built and upheld a large Dart/Kotlin/Swift codebase optimised for performance and scalability.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-label">04 / work</div>
+    <h2 class="section-title">Projects</h2>
+    <div class="projects-grid" id="projects-grid"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="section-label" style="justify-content:center">05 / contact</div>
+      <h2 class="section-title">Let's Work Together</h2>
+      <p class="contact-subtitle">Open to new opportunities, collaborations, and interesting mobile engineering challenges. Drop me a line.</p>
+      <div class="contact-links">
+        <a href="mailto:shafayathossainkhan@gmail.com" class="contact-link">✉ shafayathossainkhan@gmail.com</a>
+        <a href="https://www.linkedin.com/in/shafayat-hossain-khan/" target="_blank" class="contact-link">in LinkedIn</a>
+        <a href="https://github.com/shafayathossain" target="_blank" class="contact-link">⌥ GitHub</a>
+        <a href="tel:+8801521207955" class="contact-link">✆ +880 1521 207955</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>© 2025 Shafayat Hossain Khan</span> &nbsp;·&nbsp; <span>Built with passion & precision</span>
+</footer>
+
+<script>
+// ── CURSOR ──────────────────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+// ── CANVAS PARTICLES ────────────────────────────────────────────────
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.r = Math.random() * 1.5 + 0.3;
+    this.alpha = Math.random() * 0.5 + 0.1;
+    this.color = Math.random() > 0.6 ? '79,156,249' : Math.random() > 0.5 ? '124,58,237' : '6,214,160';
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(79,156,249,${0.06 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawLines();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ── PROJECT CARDS WITH MOUSE GLOW ───────────────────────────────────
+const projects = [
+  { title: "StoreTender Mobile",    stack: "Flutter · MS SQL · Biometric · Barcode",     desc: "Retail management app with real-time sales dashboards and inventory scanning." },
+  { title: "Ferdia Driver",         stack: "Android · iOS · Firebase · Auth0 · CI/CD",   desc: "Driver hub for trip assignments, timekeeping and vehicle maintenance." },
+  { title: "Savance Workplace",     stack: "Android · iOS · SignalR · Geo-fencing",       desc: "Corporate in/out board with real-time presence and automated status changes." },
+  { title: "My Dignio",             stack: "Android · BLE · Healthcare · 15+ devices",   desc: "Remote patient care app with BLE medical device integration." },
+  { title: "RS Sjøliv",             stack: "Flutter · AWS IoT · MQTT · Auth0",           desc: "Maritime safety app with man-overboard alerts and emergency GPS button." },
+  { title: "MyBL (Banglalink)",     stack: "Native Android · Kotlin · REST · Analytics", desc: "Super app for Bangladesh's 5M+ telecom users — utilities, health, commerce." },
+  { title: "WiNiT",                 stack: "Android · Kotlin · MVVM · Firebase · AWS",   desc: "Trivia quiz app with 15,000+ questions and real-time rewards." },
+  { title: "AttendStar Scanner",    stack: "Flutter · QR · Offline Sync",                desc: "Event ticket scanner with offline mode, live sync, and audible feedback." },
+  { title: "Live Private Guide",    stack: "Android · Kotlin · MVP · RxJava2",           desc: "Tour booking platform connecting travellers with certified private guides." },
+];
+
+const grid = document.getElementById('projects-grid');
+projects.forEach((p, i) => {
+  const card = document.createElement('div');
+  card.className = 'project-card reveal';
+  card.innerHTML = `
+    <div class="project-num">${String(i+1).padStart(2,'0')}</div>
+    <div class="project-title">${p.title}</div>
+    <div class="project-stack">${p.stack}</div>
+    <div class="project-desc">${p.desc}</div>
+  `;
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - rect.top)  / rect.height * 100) + '%');
+  });
+  grid.appendChild(card);
+});
+
+// ── SCROLL REVEAL ────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.classList.contains('timeline-item')) e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal, .timeline-item').forEach(el => observer.observe(el));
+
+// ── COUNT UP ──────────────────────────────────────────────────────────
+const countObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = +el.dataset.target;
+    if (!target) return;
+    let start = 0;
+    const step = target / 40;
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { el.textContent = target + '+'; clearInterval(timer); return; }
+      el.textContent = Math.floor(start);
+    }, 30);
+    countObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.count-up').forEach(el => countObserver.observe(el));
+</script>
+</body>
+</html>
